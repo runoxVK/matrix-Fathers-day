@@ -1,102 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vipul Kaushal - Escape The Matrix</title>
-<!-- answer: rabbit -->
+
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matrix Ultimate Escape</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#000;color:#00ff41;font-family:Consolas,monospace;overflow:hidden}
-#matrix{position:fixed;inset:0;z-index:-2}
-.container{width:min(95vw,800px);margin:auto;padding:20px}
-.card{margin-top:20px;background:rgba(0,0,0,.8);border:1px solid #00ff41;padding:20px;border-radius:10px;box-shadow:0 0 20px #00ff41}
-#terminal{height:320px;overflow:auto;border:1px solid #00ff41;padding:10px;margin-bottom:10px;text-align:left}
-input{width:100%;padding:12px;background:#000;color:#00ff41;border:1px solid #00ff41}
-button{margin-top:10px;padding:12px 18px;font-weight:bold}
-.hidden{display:none}
-</style>
-</head>
-<body>
-<canvas id="matrix"></canvas>
-
-<audio id="matrixAudio" loop>
-  <source src="matrix.mp3" type="audio/mpeg">
-</audio>
-
-<div class="container">
-<div class="card" id="intro">
-<h1>ENTER THE MATRIX</h1>
-<p>Vipul Kaushal has taken the red pill.</p>
-<button onclick="startGame()">CONNECT</button>
-</div>
-
-<div class="card hidden" id="game">
-<h2>MATRIX TERMINAL</h2>
-<div id="terminal"></div>
-<input id="answer" placeholder="Type answer and press Enter">
-<button onclick="submitAnswer()">EXECUTE</button>
-</div>
-
-<div class="card hidden" id="win">
-<h1>ACCESS GRANTED</h1>
-<h2>THE_ONE</h2>
-<p>You escaped the Matrix.</p>
-</div>
-</div>
-
+body{margin:0;background:#000;color:#0f0;font-family:monospace}
+#bg{position:fixed;inset:0;z-index:-1}
+#term{max-width:1000px;margin:20px auto;padding:15px;border:1px solid #0f0;background:rgba(0,0,0,.75);height:80vh;overflow:auto;box-shadow:0 0 20px #0f0}
+#input{width:100%;background:#000;color:#0f0;border:none;font-family:monospace;font-size:16px}
+.glitch{animation:g .15s linear 3}@keyframes g{50%{transform:translate(2px,-1px)}}
+</style></head><body>
+<canvas id="bg"></canvas>
+<div id="term"><div id="out"></div><br><input id="input" autofocus placeholder="type help"></div>
 <script>
-const terminal=document.getElementById("terminal");
-const input=document.getElementById("answer");
-
-const puzzles=[
-{q:"Decode binary: 01110110 01101001 01110000 01110101 01101100",a:"VIPUL"},
-{q:"V _ P _ L ; Available letters: I U A E O ; Enter missing letters only.",a:"IU"},
-{q:"M=1 A=2 T=3 R=4 I=5. What is MATRIX?",a:"15"},
-{q:"The machine hides information where humans rarely look.",a:"RABBIT"},
-{q:"Choose BLUE or RED",a:"RED"}
-];
-let stage=0;
-
-function write(t){terminal.innerHTML += "<p>> "+t+"</p>";terminal.scrollTop=terminal.scrollHeight;}
-function loadPuzzle(){write(puzzles[stage].q);}
-function startGame(){
-document.getElementById("matrixAudio").play().catch(()=>{});
-intro.classList.add("hidden");
-game.classList.remove("hidden");
-write("Connection Established.");
-loadPuzzle();
+const out=document.getElementById('out'),input=document.getElementById('input');
+let stage=Number(localStorage.stage||0);
+function p(t){out.innerHTML+=t+"<br>";term.scrollTop=term.scrollHeight;}
+p("MATRIX ESCAPE ROOM v2.0"); p("Type HELP");
+const cmds={help:"help connect scan status save load reset",
+status:()=>p("Stage:"+stage),
+save:()=>{localStorage.stage=stage;p("saved")},
+load:()=>{stage=Number(localStorage.stage||0);p("loaded "+stage)},
+reset:()=>{localStorage.clear();stage=0;p("reset")}}
+function win(txt){stage++;localStorage.stage=stage;p(txt)}
+input.addEventListener('keydown',e=>{
+if(e.key!=="Enter")return;
+let c=input.value.trim(); input.value="";
+if(c==="help") return p(cmds.help);
+if(c==="save") return cmds.save();
+if(c==="load") return cmds.load();
+if(c==="status") return cmds.status();
+if(c==="reset") return cmds.reset();
+if(stage===0&&c==="connect"){p("01010110 01001001 01010000 01010101 01001100");return}
+if(stage===0&&c.toUpperCase()==="VIPUL") return win("Identity confirmed.");
+if(stage===1&&c==="scan"){p("V_P_L K_ _SH_L");return}
+if(stage===1&&c.toUpperCase()==="IUAUA") return win("Fragment restored.");
+if(stage===2&&c.toUpperCase()==="MATRIX") return win("Cipher bypassed.");
+if(stage===3&&c==="inspect logs"){p("follow_the_white_rabbit.txt");return}
+if(stage===3&&c.toUpperCase()==="RABBIT") return win("Rabbit found.");
+if(stage===4&&c==="ls"){p("/root/system/hidden/source.txt");return}
+if(stage===4&&c==="cat source.txt") return win("SOURCE KEY: REDPILLKEY");
+if(stage===5&&c==="call 4045550199") return win("Exit phone connected.");
+if(stage===6&&c==="override smith") return win("Smith neutralized.");
+if(stage===7&&c==="use REDPILLKEY") return win("Source unlocked.");
+if(stage===8){
+ if(c==="take redpill"){p("ESCAPE ENDING"); stage=999;}
+ else if(c==="become architect"){p("ARCHITECT ENDING"); stage=999;}
+ else if(c==="join smith"){p("AGENT ENDING"); stage=999;}
+ else p("Choices: take redpill / become architect / join smith");
+ return;
 }
-function submitAnswer(){
-const v=input.value.trim().toUpperCase();
-input.value="";
-if(v===puzzles[stage].a){
-write("ACCESS ACCEPTED");
-stage++;
-if(stage>=puzzles.length){game.classList.add("hidden");win.classList.remove("hidden");return;}
-loadPuzzle();
-}else if(stage===4 && v==="BLUE"){
-write("Simulation Restarted");
-stage=0; terminal.innerHTML=""; loadPuzzle();
-}else write("ACCESS DENIED");
-}
-input.addEventListener("keydown",e=>{if(e.key==="Enter")submitAnswer();});
-
-const canvas=document.getElementById("matrix"),ctx=canvas.getContext("2d");
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
-resize(); addEventListener("resize",resize);
-const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789アイウエオ";
-const size=16, cols=Math.floor(innerWidth/size), drops=Array(cols).fill(1);
-setInterval(()=>{
-ctx.fillStyle="rgba(0,0,0,.05)";ctx.fillRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="#00ff41";ctx.font=size+"px monospace";
-for(let i=0;i<drops.length;i++){
-const t=chars[Math.floor(Math.random()*chars.length)];
-ctx.fillText(t,i*size,drops[i]*size);
-if(drops[i]*size>canvas.height&&Math.random()>.975)drops[i]=0;
-drops[i]++;
-}
-},35);
-</script>
-</body>
-</html>
+p("Unknown command");
+});
+setInterval(()=>document.getElementById('term').classList.toggle('glitch',Math.random()>.9),4000);
+const c=document.getElementById('bg'),x=c.getContext('2d');let cols,drops;
+function rs(){c.width=innerWidth;c.height=innerHeight;cols=Math.floor(c.width/20);drops=Array(cols).fill(1)}rs();onresize=rs;
+setInterval(()=>{x.fillStyle='rgba(0,0,0,.08)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#0f0';x.font='16px monospace';
+for(let i=0;i<drops.length;i++){let t=String.fromCharCode(0x30A0+Math.random()*96);x.fillText(t,i*20,drops[i]*20);if(drops[i]*20>c.height&&Math.random()>.975)drops[i]=0;drops[i]++;}},35);
+</script></body></html>
