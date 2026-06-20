@@ -1,59 +1,69 @@
-
-<!DOCTYPE html><html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matrix Ultimate Escape</title>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matrix Escape Room V3</title>
 <style>
-body{margin:0;background:#000;color:#0f0;font-family:monospace}
-#bg{position:fixed;inset:0;z-index:-1}
-#term{max-width:1000px;margin:20px auto;padding:15px;border:1px solid #0f0;background:rgba(0,0,0,.75);height:80vh;overflow:auto;box-shadow:0 0 20px #0f0}
-#input{width:100%;background:#000;color:#0f0;border:none;font-family:monospace;font-size:16px}
-.glitch{animation:g .15s linear 3}@keyframes g{50%{transform:translate(2px,-1px)}}
-</style></head><body>
-<canvas id="bg"></canvas>
-<div id="term"><div id="out"></div><br><input id="input" autofocus placeholder="type help"></div>
+body{margin:0;background:#000;color:#00ff66;font-family:Consolas,monospace;overflow:hidden}
+#matrix{position:fixed;inset:0;z-index:-1}
+#terminal{max-width:900px;height:80vh;overflow:auto;margin:20px auto;padding:20px;background:rgba(0,0,0,.85);border:1px solid #00ff66}
+#input{width:100%;padding:12px;background:#000;color:#00ff66;border:1px solid #00ff66;font-family:inherit}
+</style></head>
+<body>
+<canvas id="matrix"></canvas>
+<audio id="audio" loop><source src="Matrix.mp3" type="audio/mpeg"></audio>
+<div id="terminal"><div id="out"></div><br><input id="input" placeholder="Type HELP"></div>
+<!-- white rabbit -->
 <script>
-const out=document.getElementById('out'),input=document.getElementById('input');
-let stage=Number(localStorage.stage||0);
-function p(t){out.innerHTML+=t+"<br>";term.scrollTop=term.scrollHeight;}
-p("MATRIX ESCAPE ROOM v2.0"); p("Type HELP");
-const cmds={help:"help connect scan status save load reset",
-status:()=>p("Stage:"+stage),
-save:()=>{localStorage.stage=stage;p("saved")},
-load:()=>{stage=Number(localStorage.stage||0);p("loaded "+stage)},
-reset:()=>{localStorage.clear();stage=0;p("reset")}}
-function win(txt){stage++;localStorage.stage=stage;p(txt)}
+const out=document.getElementById('out'),input=document.getElementById('input'),audio=document.getElementById('audio');
+let stage=Number(localStorage.getItem('matrix_stage')||0);
+let inventory=JSON.parse(localStorage.getItem('matrix_inventory')||'[]');
+function p(t){out.innerHTML += '&gt; '+t+'<br>'; out.scrollTop=out.scrollHeight;}
+function save(){localStorage.setItem('matrix_stage',stage);localStorage.setItem('matrix_inventory',JSON.stringify(inventory));}
+function mission(){const m=["Establish connection (CONNECT).","Recover identity (SCAN).","Break Agent encryption.","Follow the White Rabbit.","Find the Source file.","Call the exit phone.","Stop Agent Smith.","Unlock the Source.","Choose your fate."];if(stage<m.length)p('[MISSION] '+m[stage]);}
+p('MATRIX ESCAPE ROOM V3');p('Every puzzle has an in-game clue.');p('Type HELP.');mission();
+
 input.addEventListener('keydown',e=>{
-if(e.key!=="Enter")return;
-let c=input.value.trim(); input.value="";
-if(c==="help") return p(cmds.help);
-if(c==="save") return cmds.save();
-if(c==="load") return cmds.load();
-if(c==="status") return cmds.status();
-if(c==="reset") return cmds.reset();
-if(stage===0&&c==="connect"){p("01010110 01001001 01010000 01010101 01001100");return}
-if(stage===0&&c.toUpperCase()==="VIPUL") return win("Identity confirmed.");
-if(stage===1&&c==="scan"){p("V_P_L K_ _SH_L");return}
-if(stage===1&&c.toUpperCase()==="IUAUA") return win("Fragment restored.");
-if(stage===2&&c.toUpperCase()==="MATRIX") return win("Cipher bypassed.");
-if(stage===3&&c==="inspect logs"){p("follow_the_white_rabbit.txt");return}
-if(stage===3&&c.toUpperCase()==="RABBIT") return win("Rabbit found.");
-if(stage===4&&c==="ls"){p("/root/system/hidden/source.txt");return}
-if(stage===4&&c==="cat source.txt") return win("SOURCE KEY: REDPILLKEY");
-if(stage===5&&c==="call 4045550199") return win("Exit phone connected.");
-if(stage===6&&c==="override smith") return win("Smith neutralized.");
-if(stage===7&&c==="use REDPILLKEY") return win("Source unlocked.");
+if(e.key!=='Enter')return;
+const c=input.value.trim(); input.value='';
+if(c.toLowerCase()==='help'){p('HELP CONNECT SCAN STATUS SAVE LOAD RESET INSPECT LOGS LS CAT SOURCE.TXT CALL <NUMBER> INVENTORY');return;}
+if(c.toLowerCase()==='save'){save();p('Saved.');return;}
+if(c.toLowerCase()==='load'){stage=Number(localStorage.getItem('matrix_stage')||0);inventory=JSON.parse(localStorage.getItem('matrix_inventory')||'[]');p('Loaded.');mission();return;}
+if(c.toLowerCase()==='reset'){localStorage.clear();stage=0;inventory=[];p('Reset.');mission();return;}
+if(c.toLowerCase()==='status'){p('Stage '+stage);mission();return;}
+if(c.toLowerCase()==='inventory'){p(inventory.length?inventory.join(', '):'Inventory empty');return;}
+
+if(stage===0){
+ if(c.toLowerCase()==='connect'){audio.play().catch(()=>{});p('01010110 01001001 01010000 01010101 01001100');p('Hint: Binary ASCII.');return;}
+ if(c.toUpperCase()==='VIPUL'){stage=1;save();p('Identity confirmed.');mission();return;}
+}
+if(stage===1){
+ if(c.toLowerCase()==='scan'){p('V_P_L K_ _SH_L');p('Restore the missing vowels.');return;}
+ if(c.toUpperCase()==='IUAUA'){stage=2;save();p('Fragment restored.');p('Encrypted message: PDWULA');p('Hint: Caesar shift +3.');mission();return;}
+}
+if(stage===2 && c.toUpperCase()==='MATRIX'){stage=3;save();p('Cipher bypassed.');mission();return;}
+if(stage===3){
+ if(c.toLowerCase()==='inspect logs'){p('follow_the_white_rabbit.txt');p('What keyword does this suggest?');return;}
+ if(c.toUpperCase()==='RABBIT'){stage=4;save();p('Rabbit located.');mission();return;}
+}
+if(stage===4){
+ if(c.toLowerCase()==='ls'){p('source.txt');return;}
+ if(c.toLowerCase()==='cat source.txt'){stage=5;save();p('Exit phone number: 4045550199');p('Hint: CALL <number>');mission();return;}
+}
+if(stage===5 && c.toLowerCase()==='call 4045550199'){stage=6;save();p('Exit line connected.');p('WARNING: AGENT SMITH DETECTED');p('Suggested command: OVERRIDE SMITH');mission();return;}
+if(stage===6 && c.toLowerCase()==='override smith'){stage=7;inventory.push('REDPILLKEY');save();p('Item acquired: REDPILLKEY');mission();return;}
+if(stage===7 && c.toLowerCase()==='use redpillkey'){stage=8;save();p('take redpill');p('become architect');p('join smith');mission();return;}
 if(stage===8){
- if(c==="take redpill"){p("ESCAPE ENDING"); stage=999;}
- else if(c==="become architect"){p("ARCHITECT ENDING"); stage=999;}
- else if(c==="join smith"){p("AGENT ENDING"); stage=999;}
- else p("Choices: take redpill / become architect / join smith");
+ if(c==='take redpill') p('ENDING: You escaped the Matrix.');
+ else if(c==='become architect') p('ENDING: You became the Architect.');
+ else if(c==='join smith') p('ENDING: Humanity was assimilated.');
+ else p('Choose one of the displayed endings.');
  return;
 }
-p("Unknown command");
+p('Unknown command.');
 });
-setInterval(()=>document.getElementById('term').classList.toggle('glitch',Math.random()>.9),4000);
-const c=document.getElementById('bg'),x=c.getContext('2d');let cols,drops;
-function rs(){c.width=innerWidth;c.height=innerHeight;cols=Math.floor(c.width/20);drops=Array(cols).fill(1)}rs();onresize=rs;
-setInterval(()=>{x.fillStyle='rgba(0,0,0,.08)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#0f0';x.font='16px monospace';
-for(let i=0;i<drops.length;i++){let t=String.fromCharCode(0x30A0+Math.random()*96);x.fillText(t,i*20,drops[i]*20);if(drops[i]*20>c.height&&Math.random()>.975)drops[i]=0;drops[i]++;}},35);
-</script></body></html>
+
+const canvas=document.getElementById('matrix'),ctx=canvas.getContext('2d');let cols,drops;
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/20);drops=Array(cols).fill(1);}
+resize(); addEventListener('resize',resize);
+setInterval(()=>{ctx.fillStyle='rgba(0,0,0,.07)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#00ff66';ctx.font='16px monospace';for(let i=0;i<drops.length;i++){const t=String.fromCharCode(0x30A0+Math.random()*96);ctx.fillText(t,i*20,drops[i]*20);if(drops[i]*20>canvas.height&&Math.random()>.975)drops[i]=0;drops[i]++;}},35);
+</script>
+</body></html>
