@@ -52,208 +52,235 @@
     <input id="input" placeholder="Type HELP and press Enter">
   </div>
 
-  <script>
-    const out = document.getElementById('out');
-    const input = document.getElementById('input');
-    const audio = document.getElementById('audio');
-    
-    let stage = 0;
-    
-    function p(t){
-      out.innerHTML += `<div class="line">&gt; ${t}</div>`;
-      out.scrollTop = out.scrollHeight;
-    }
-    // real
-    const missions = [
-      "CONNECT to the Matrix.",
-      "Recover your identity.",
-      "Break the Agent cipher.",
-      "Find the White Rabbit.",
-      "Decode the coordinates.",
-      "Find the hidden message.",
-      "Open the Binary Door.",
-      "Solve the Spoon puzzle.",
-      "Choose your fate."
-    ];
-    
-    function mission(){
-      if(stage < missions.length){
-        p("[MISSION] " + missions[stage]);
-      }
-    }
-    
-    function endGame(text){
-      p(text);
-      p("Refresh the page to play again.");
-      input.disabled = true;
-    }
-    
-    p("VIPUL KAUSHAL - ESCAPE THE MATRIX");
-    p("Every puzzle is solvable from clues in the game.");
-    p("Type HELP.");
-    mission();
-    
-    input.addEventListener('keydown', e => {
-      if(e.key !== 'Enter') return;
-    
-      const c = input.value.trim();
-      input.value = "";
-    
-      if(c.toLowerCase() === "help"){
-        p("Commands: HELP STATUS CONNECT");
-        return;
-      }
-    
-      if(c.toLowerCase() === "status"){
-        mission();
-        return;
-      }
-    
-      // PUZZLE 1
-      if(stage === 0){
-        if(c.toLowerCase() === "connect"){
-          audio.play().catch(()=>{});
-          p("01010110 01001001 01010000 01010101 01001100");
-          p("Hint: Binary ASCII.");
-          return;
-        }
-    
-        if(c.toUpperCase() === "VIPUL"){
-          stage++;
-          p("Identity confirmed.");
-          mission();
-        } else {
-          p("Try CONNECT first.");
-        }
-        return;
-      }
-    
-      // PUZZLE 2
-      if(stage === 1){
-        if(c.toUpperCase() === "IUAUA"){
-          stage++;
-          p("Fragment restored.");
-          mission();
-        } else {
-          p("V_P_L K_ _SH_L");
-          p("Restore the missing vowels only.");
-        }
-        return;
-      }
-    
-      // PUZZLE 3
-      if(stage === 2){
-        if(c.toUpperCase() === "MATRIX"){
-          stage++;
-          p("Cipher bypassed.");
-          mission();
-        } else {
-          p("Encrypted message:");
-          p("PDWULA");
-          p("Hint: Caesar shift +3.");
-        }
-        return;
-      }
-    
-      // PUZZLE 4
-      if(stage === 3){
-        if(c.toLowerCase() === "follow_the_white_rabbit.txt"){
-          stage++;
-          p("File opened.");
-          p("The rabbit leaves a number: 319");
-          mission();
-        } else {
-          p("LOG FILES:");
-          p("agent.log");
-          p("access.log");
-          p("follow_the_white_rabbit.txt");
-          p("Which file stands out?");
-        }
-        return;
-      }
-    
-      // PUZZLE 5
-      if(stage === 4){
-        if(c.toUpperCase() === "ECG"){
-          stage++;
-          p("Coordinates decoded.");
-          mission();
-        } else {
-          p("GRID");
-          p("A B C");
-          p("D E F");
-          p("G H I");
-          p("Coordinates:");
-          p("2,2");
-          p("1,3");
-          p("3,1");
-          p("Decode the letters.");
-        }
-        return;
-      }
-    
-      // PUZZLE 6
-      if(stage === 5){
-        if(c.toUpperCase() === "AGENT"){
-          stage++;
-          p("Message recovered.");
-          mission();
-        } else {
-          p("Every second letter is fake:");
-          p("AXGXEXNXTX");
-        }
-        return;
-      }
-    
-      // PUZZLE 7
-      if(stage === 6){
-        if(c.toUpperCase() === "RED"){
-          stage++;
-          p("Door opened.");
-          mission();
-        } else {
-          p("Binary Door:");
-          p("01110010");
-          p("01100101");
-          p("01100100");
-        }
-        return;
-      }
-    
-      // PUZZLE 8
-      if(stage === 7){
-        if(c.toUpperCase() === "SPOON"){
-          stage++;
-          p("Final decision unlocked.");
-          p("REDPILL");
-          p("ARCHITECT");
-          p("SMITH");
-        } else {
-          p("There is no spoon.");
-          p("Unscramble:");
-          p("ONPOS");
-        }
-        return;
-      }
-    
-      // ENDINGS
-      if(stage === 8){
-        if(c.toUpperCase() === "REDPILL"){
-          endGame("ENDING: You escaped the Matrix.");
-        }
-        else if(c.toUpperCase() === "ARCHITECT"){
-          endGame("ENDING: You became the Architect.");
-        }
-        else if(c.toUpperCase() === "SMITH"){
-          endGame("ENDING: Agent Smith assimilated humanity.");
-        }
-        else{
-          p("Choose: REDPILL, ARCHITECT, or SMITH.");
-        }
-        return;
-      }
-    });
-</script>
+ <script>
+const out = document.getElementById('out');
+const input = document.getElementById('input');
+const audio = document.getElementById('audio');
 
+let stage = 0;
+
+function p(t){
+  out.innerHTML += `<div class="line">&gt; ${t}</div>`;
+  out.scrollTop = out.scrollHeight;
+}
+
+const missions = [
+  "CONNECT to the Matrix.",
+  "Recover your identity.",
+  "Break the Agent cipher.",
+  "Find the White Rabbit.",
+  "Decode the coordinates.",
+  "Find the hidden message.",
+  "Open the Binary Door.",
+  "Solve the Spoon puzzle.",
+  "Choose your fate."
+];
+
+function mission(){
+  if(stage < missions.length){
+    p("[MISSION] " + missions[stage]);
+  }
+}
+
+function showPuzzle(){
+  switch(stage){
+    case 1:
+      p("V_P_L K_ _SH_L");
+      p("Restore the missing vowels only.");
+      break;
+
+    case 2:
+      p("Encrypted message:");
+      p("PDWULA");
+      p("Hint: Caesar shift +3.");
+      break;
+
+    case 3:
+      p("LOG FILES:");
+      p("agent.log");
+      p("access.log");
+      p("follow_the_white_rabbit.txt");
+      p("Which file stands out?");
+      break;
+
+    case 4:
+      p("GRID");
+      p("A B C");
+      p("D E F");
+      p("G H I");
+      p("Coordinates:");
+      p("2,2");
+      p("1,3");
+      p("3,1");
+      p("Decode the letters.");
+      break;
+
+    case 5:
+      p("Every second letter is fake:");
+      p("AXGXEXNXTX");
+      break;
+
+    case 6:
+      p("Binary Door:");
+      p("01110010");
+      p("01100101");
+      p("01100100");
+      break;
+
+    case 7:
+      p("There is no spoon.");
+      p("Unscramble:");
+      p("ONPOS");
+      break;
+
+    case 8:
+      p("Final decision unlocked.");
+      p("REDPILL");
+      p("ARCHITECT");
+      p("SMITH");
+      break;
+  }
+}
+
+function endGame(text){
+  p(text);
+  p("Refresh the page to play again.");
+  input.disabled = true;
+}
+
+p("VIPUL KAUSHAL - ESCAPE THE MATRIX");
+p("Every puzzle is solvable from clues in the game.");
+p("Type HELP.");
+mission();
+
+input.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+
+  const c = input.value.trim();
+  input.value = "";
+
+  if(c.toLowerCase() === "help"){
+    p("Commands: HELP STATUS CONNECT");
+    return;
+  }
+
+  if(c.toLowerCase() === "status"){
+    mission();
+    showPuzzle();
+    return;
+  }
+
+  // Puzzle 1
+  if(stage === 0){
+    if(c.toLowerCase() === "connect"){
+      audio.play().catch(()=>{});
+      p("01010110 01001001 01010000 01010101 01001100");
+      p("Hint: Binary ASCII.");
+      return;
+    }
+
+    if(c.toUpperCase() === "VIPUL"){
+      stage++;
+      p("Identity confirmed.");
+      mission();
+      showPuzzle();
+    } else {
+      p("Try CONNECT first.");
+    }
+    return;
+  }
+
+  // Puzzle 2
+  if(stage === 1){
+    if(c.toUpperCase() === "IUAUA"){
+      stage++;
+      p("Fragment restored.");
+      mission();
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Puzzle 3
+  if(stage === 2){
+    if(c.toUpperCase() === "MATRIX"){
+      stage++;
+      p("Cipher bypassed.");
+      mission();
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Puzzle 4
+  if(stage === 3){
+    if(c.toLowerCase() === "follow_the_white_rabbit.txt"){
+      stage++;
+      p("File opened.");
+      mission();
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Puzzle 5
+  if(stage === 4){
+    if(c.toUpperCase() === "ECG"){
+      stage++;
+      p("Coordinates decoded.");
+      mission();
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Puzzle 6
+  if(stage === 5){
+    if(c.toUpperCase() === "AGENT"){
+      stage++;
+      p("Message recovered.");
+      mission();
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Puzzle 7
+  if(stage === 6){
+    if(c.toUpperCase() === "RED"){
+      stage++;
+      p("Door opened.");
+      mission();
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Puzzle 8
+  if(stage === 7){
+    if(c.toUpperCase() === "SPOON"){
+      stage++;
+      showPuzzle();
+    }
+    return;
+  }
+
+  // Endings
+  if(stage === 8){
+    if(c.toUpperCase() === "REDPILL"){
+      endGame("ENDING: You escaped the Matrix.");
+    }
+    else if(c.toUpperCase() === "ARCHITECT"){
+      endGame("ENDING: You became the Architect.");
+    }
+    else if(c.toUpperCase() === "SMITH"){
+      endGame("ENDING: Agent Smith assimilated humanity.");
+    }
+    else{
+      p("Choose: REDPILL, ARCHITECT, or SMITH.");
+    }
+  }
+});
+</script>
 </body>
 </html>
