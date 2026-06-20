@@ -1,69 +1,219 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matrix Escape Room V3</title>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vipul Kaushal: Escape The Matrix</title>
 <style>
 body{margin:0;background:#000;color:#00ff66;font-family:Consolas,monospace;overflow:hidden}
 #matrix{position:fixed;inset:0;z-index:-1}
-#terminal{max-width:900px;height:80vh;overflow:auto;margin:20px auto;padding:20px;background:rgba(0,0,0,.85);border:1px solid #00ff66}
+#terminal{max-width:900px;height:80vh;overflow:auto;margin:20px auto;padding:20px;background:rgba(0,0,0,.85);border:1px solid #00ff66;box-shadow:0 0 20px #00ff66}
 #input{width:100%;padding:12px;background:#000;color:#00ff66;border:1px solid #00ff66;font-family:inherit}
-</style></head>
+.line{margin:6px 0}
+</style>
+</head>
 <body>
 <canvas id="matrix"></canvas>
-<audio id="audio" loop><source src="Matrix.mp3" type="audio/mpeg"></audio>
-<div id="terminal"><div id="out"></div><br><input id="input" placeholder="Type HELP"></div>
+
+<audio id="audio" loop>
+<source src="Matrix.mp3" type="audio/mpeg">
+</audio>
+
+<div id="terminal">
+<div id="out"></div>
+<br>
+<input id="input" placeholder="Type HELP and press Enter">
+</div>
+
 <!-- white rabbit -->
+
 <script>
-const out=document.getElementById('out'),input=document.getElementById('input'),audio=document.getElementById('audio');
+const out=document.getElementById('out');
+const input=document.getElementById('input');
+const audio=document.getElementById('audio');
+
 let stage=Number(localStorage.getItem('matrix_stage')||0);
-let inventory=JSON.parse(localStorage.getItem('matrix_inventory')||'[]');
-function p(t){out.innerHTML += '&gt; '+t+'<br>'; out.scrollTop=out.scrollHeight;}
-function save(){localStorage.setItem('matrix_stage',stage);localStorage.setItem('matrix_inventory',JSON.stringify(inventory));}
-function mission(){const m=["Establish connection (CONNECT).","Recover identity (SCAN).","Break Agent encryption.","Follow the White Rabbit.","Find the Source file.","Call the exit phone.","Stop Agent Smith.","Unlock the Source.","Choose your fate."];if(stage<m.length)p('[MISSION] '+m[stage]);}
-p('MATRIX ESCAPE ROOM V3');p('Every puzzle has an in-game clue.');p('Type HELP.');mission();
+function p(t){out.innerHTML += '<div class="line">&gt; '+t+'</div>';out.scrollTop=out.scrollHeight;}
+function save(){localStorage.setItem('matrix_stage',stage);}
+
+const missions=[
+"CONNECT to the Matrix.",
+"Recover your identity.",
+"Break the Agent cipher.",
+"Find the White Rabbit.",
+"Decode the coordinates.",
+"Find the hidden message.",
+"Open the Binary Door.",
+"Solve the Spoon puzzle.",
+"Choose your fate."
+];
+
+function mission(){ if(stage<missions.length) p("[MISSION] "+missions[stage]); }
+
+p("VIPUL KAUSHAL - ESCAPE THE MATRIX");
+p("Every puzzle is solvable from clues in the game.");
+p("Type HELP.");
+mission();
 
 input.addEventListener('keydown',e=>{
-if(e.key!=='Enter')return;
-const c=input.value.trim(); input.value='';
-if(c.toLowerCase()==='help'){p('HELP CONNECT SCAN STATUS SAVE LOAD RESET INSPECT LOGS LS CAT SOURCE.TXT CALL <NUMBER> INVENTORY');return;}
-if(c.toLowerCase()==='save'){save();p('Saved.');return;}
-if(c.toLowerCase()==='load'){stage=Number(localStorage.getItem('matrix_stage')||0);inventory=JSON.parse(localStorage.getItem('matrix_inventory')||'[]');p('Loaded.');mission();return;}
-if(c.toLowerCase()==='reset'){localStorage.clear();stage=0;inventory=[];p('Reset.');mission();return;}
-if(c.toLowerCase()==='status'){p('Stage '+stage);mission();return;}
-if(c.toLowerCase()==='inventory'){p(inventory.length?inventory.join(', '):'Inventory empty');return;}
+ if(e.key!=='Enter') return;
+ const c=input.value.trim();
+ input.value='';
 
-if(stage===0){
- if(c.toLowerCase()==='connect'){audio.play().catch(()=>{});p('01010110 01001001 01010000 01010101 01001100');p('Hint: Binary ASCII.');return;}
- if(c.toUpperCase()==='VIPUL'){stage=1;save();p('Identity confirmed.');mission();return;}
-}
-if(stage===1){
- if(c.toLowerCase()==='scan'){p('V_P_L K_ _SH_L');p('Restore the missing vowels.');return;}
- if(c.toUpperCase()==='IUAUA'){stage=2;save();p('Fragment restored.');p('Encrypted message: PDWULA');p('Hint: Caesar shift +3.');mission();return;}
-}
-if(stage===2 && c.toUpperCase()==='MATRIX'){stage=3;save();p('Cipher bypassed.');mission();return;}
-if(stage===3){
- if(c.toLowerCase()==='inspect logs'){p('follow_the_white_rabbit.txt');p('What keyword does this suggest?');return;}
- if(c.toUpperCase()==='RABBIT'){stage=4;save();p('Rabbit located.');mission();return;}
-}
-if(stage===4){
- if(c.toLowerCase()==='ls'){p('source.txt');return;}
- if(c.toLowerCase()==='cat source.txt'){stage=5;save();p('Exit phone number: 4045550199');p('Hint: CALL <number>');mission();return;}
-}
-if(stage===5 && c.toLowerCase()==='call 4045550199'){stage=6;save();p('Exit line connected.');p('WARNING: AGENT SMITH DETECTED');p('Suggested command: OVERRIDE SMITH');mission();return;}
-if(stage===6 && c.toLowerCase()==='override smith'){stage=7;inventory.push('REDPILLKEY');save();p('Item acquired: REDPILLKEY');mission();return;}
-if(stage===7 && c.toLowerCase()==='use redpillkey'){stage=8;save();p('take redpill');p('become architect');p('join smith');mission();return;}
-if(stage===8){
- if(c==='take redpill') p('ENDING: You escaped the Matrix.');
- else if(c==='become architect') p('ENDING: You became the Architect.');
- else if(c==='join smith') p('ENDING: Humanity was assimilated.');
- else p('Choose one of the displayed endings.');
- return;
-}
-p('Unknown command.');
+ if(c.toLowerCase()==='help'){
+   p("HELP STATUS SAVE LOAD RESET");
+   return;
+ }
+ if(c.toLowerCase()==='save'){save();p("Saved.");return;}
+ if(c.toLowerCase()==='load'){stage=Number(localStorage.getItem('matrix_stage')||0);p("Loaded.");mission();return;}
+ if(c.toLowerCase()==='reset'){localStorage.clear();stage=0;p("Reset.");mission();return;}
+ if(c.toLowerCase()==='status'){p("Stage "+stage);mission();return;}
+
+ if(stage===0){
+   if(c.toLowerCase()==='connect'){
+      audio.play().catch(()=>{});
+      p("01010110 01001001 01010000 01010101 01001100");
+      p("Hint: Binary ASCII.");
+      return;
+   }
+   if(c.toUpperCase()==='VIPUL'){
+      stage=1;save();
+      p("Identity confirmed.");
+      mission();
+      return;
+   }
+ }
+
+ if(stage===1){
+   p("V_P_L K_ _SH_L");
+   p("Restore the missing vowels only.");
+   if(c.toUpperCase()==='IUAUA'){
+      stage=2;save();
+      p("Fragment restored.");
+      mission();
+   }
+   return;
+ }
+
+ if(stage===2){
+   p("Encrypted message:");
+   p("PDWULA");
+   p("Hint: Caesar shift +3.");
+   if(c.toUpperCase()==='MATRIX'){
+      stage=3;save();
+      p("Cipher bypassed.");
+      mission();
+   }
+   return;
+ }
+
+ if(stage===3){
+   p("LOG FILES:");
+   p("agent.log");
+   p("access.log");
+   p("follow_the_white_rabbit.txt");
+   p("Which file stands out?");
+   if(c.toLowerCase()==='follow_the_white_rabbit.txt'){
+      stage=4;save();
+      p("File opened.");
+      p("The rabbit leaves a number: 319");
+      mission();
+   }
+   return;
+ }
+
+ if(stage===4){
+   p("GRID");
+   p("A B C");
+   p("D E F");
+   p("G H I");
+   p("Coordinates:");
+   p("2,2");
+   p("1,3");
+   p("3,1");
+   p("Decode the letters.");
+   if(c.toUpperCase()==='ECG'){
+      stage=5;save();
+      p("Coordinates decoded.");
+      mission();
+   }
+   return;
+ }
+
+ if(stage===5){
+   p("Every second letter is fake:");
+   p("AXGXEXNXTX");
+   if(c.toUpperCase()==='AGENT'){
+      stage=6;save();
+      p("Message recovered.");
+      mission();
+   }
+   return;
+ }
+
+ if(stage===6){
+   p("Binary Door:");
+   p("01110010");
+   p("01100101");
+   p("01100100");
+   if(c.toUpperCase()==='RED'){
+      stage=7;save();
+      p("Door opened.");
+      mission();
+   }
+   return;
+ }
+
+ if(stage===7){
+   p("There is no spoon.");
+   p("Unscramble:");
+   p("ONPOS");
+   if(c.toUpperCase()==='SPOON'){
+      stage=8;save();
+      p("Final decision unlocked.");
+      p("Type:");
+      p("REDPILL");
+      p("ARCHITECT");
+      p("SMITH");
+   }
+   return;
+ }
+
+ if(stage===8){
+   if(c.toUpperCase()==='REDPILL') p("ENDING: You escaped the Matrix.");
+   else if(c.toUpperCase()==='ARCHITECT') p("ENDING: You became the Architect.");
+   else if(c.toUpperCase()==='SMITH') p("ENDING: Agent Smith assimilated humanity.");
+   else p("Choose REDPILL, ARCHITECT or SMITH.");
+   return;
+ }
+
+ p("Unknown command.");
 });
 
-const canvas=document.getElementById('matrix'),ctx=canvas.getContext('2d');let cols,drops;
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/20);drops=Array(cols).fill(1);}
-resize(); addEventListener('resize',resize);
-setInterval(()=>{ctx.fillStyle='rgba(0,0,0,.07)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#00ff66';ctx.font='16px monospace';for(let i=0;i<drops.length;i++){const t=String.fromCharCode(0x30A0+Math.random()*96);ctx.fillText(t,i*20,drops[i]*20);if(drops[i]*20>canvas.height&&Math.random()>.975)drops[i]=0;drops[i]++;}},35);
+const canvas=document.getElementById('matrix');
+const ctx=canvas.getContext('2d');
+let cols,drops;
+function resize(){
+ canvas.width=innerWidth;
+ canvas.height=innerHeight;
+ cols=Math.floor(canvas.width/20);
+ drops=Array(cols).fill(1);
+}
+resize();
+addEventListener('resize',resize);
+
+setInterval(()=>{
+ ctx.fillStyle='rgba(0,0,0,.08)';
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle='#00ff66';
+ ctx.font='16px monospace';
+ for(let i=0;i<drops.length;i++){
+   const t=String.fromCharCode(0x30A0+Math.random()*96);
+   ctx.fillText(t,i*20,drops[i]*20);
+   if(drops[i]*20>canvas.height&&Math.random()>.975)drops[i]=0;
+   drops[i]++;
+ }
+},35);
 </script>
-</body></html>
+</body>
+</html>
