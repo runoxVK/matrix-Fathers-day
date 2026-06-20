@@ -56,12 +56,13 @@
 const out = document.getElementById('out');
 const input = document.getElementById('input');
 const audio = document.getElementById('audio');
+const terminal = document.getElementById('terminal');
 
 let stage = 0;
 
 function p(t){
   out.innerHTML += `<div class="line">&gt; ${t}</div>`;
-  out.scrollTop = out.scrollHeight;
+  terminal.scrollTop = terminal.scrollHeight;
 }
 
 const missions = [
@@ -152,6 +153,8 @@ p("VIPUL KAUSHAL - ESCAPE THE MATRIX");
 p("Every puzzle is solvable from clues in the game.");
 p("Type HELP.");
 mission();
+showPuzzle();
+
 
 input.addEventListener('keydown', e => {
   if(e.key !== 'Enter') return;
@@ -230,6 +233,7 @@ input.addEventListener('keydown', e => {
       p("Coordinates decoded.");
       mission();
       showPuzzle();
+      input.focus();
     }
     return;
   }
